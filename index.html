@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For COCO 💖</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            touch-action: manipulation; /* Improves mobile touch feel */
+        }
+
+        .container {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 450px; /* Larger box size */
+            min-height: 500px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        h1 {
+            color: #ff3366;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        /* The area where the No button can run around */
+        .btn-area {
+            position: relative;
+            height: 300px; /* Big space for the button to move */
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+            touch-action: none; /* Prevents scrolling when trying to tap */
+        }
+
+        #yesBtn {
+            background: #ff3366;
+            color: white;
+            position: relative;
+            z-index: 5; /* Keeps Yes button accessible */
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
+        }
+
+        #noBtn {
+            background: #666;
+            color: white;
+            position: absolute;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            z-index: 1; /* Start behind Yes if needed, but we'll move it */
+            transition: all 0.2s ease;
+        }
+
+        /* Result Screen */
+        #result {
+            display: none;
+        }
+
+        #result img {
+            width: 80%;
+            max-width: 250px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        /* Floating Heart Styles */
+        .heart {
+            position: fixed;
+            font-size: 25px;
+            top: -10%;
+            z-index: 0;
+            user-select: none;
+            pointer-events: none;
+            animation: floatUp 4s linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="card">
+    <div id="main-content">
+        <h1 id="typing"></h1>
+        <div class="btn-area" id="btnArea">
+            <button id="yesBtn">Yes 💖</button>
+            <button id="noBtn">No 😅</button>
+        </div>
+    </div>
+
+    <div id="result">
+        <h1>Yaaay <span style="color:#ff3366">COCO</span>!!! 💕</h1>
+        <p>You've made me the happiest person! 💍</p>
+        <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Happy">
+    </div>
+</div>
+
+<audio id="music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
+
+<script>
+    const text = "Hey COCO 💕\nWill you be my Valentine?";
+    const typingEl = document.getElementById("typing");
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const btnArea = document.getElementById("btnArea");
+    const result = document.getElementById("result");
+    const mainContent = document.getElementById("main-content");
+    const music = document.getElementById("music");
+    let i = 0;
+
+    // Typing Effect
+    function typeText() {
+        if (i < text.length) {
+            typingEl.innerHTML += text[i] === "\n" ? "<br>" : text[i];
+            i++;
+            setTimeout(typeText, 70);
+        }
+    }
+    typeText();
+
+    // Run-away Logic (Mouse & Touch)
+    function moveButton(e) {
+        const areaWidth = btnArea.clientWidth;
+        const areaHeight = btnArea.clientHeight;
+        const btnWidth = noBtn.offsetWidth;
+        const btnHeight = noBtn.offsetHeight;
+
+        // Calculate random coordinates inside the btnArea
+        const newX = Math.random() * (areaWidth - btnWidth);
+        const newY = Math.random() * (areaHeight - btnHeight);
+
+        noBtn.style.left = newX + "px";
+        noBtn.style.top = newY + "px";
+        noBtn.style.transform = "none"; // Remove the initial centering
+    }
+
+    // Triggered on hover (Desktop) and tap (Mobile)
+    noBtn.addEventListener("mouseover", moveButton);
+    noBtn.addEventListener("touchstart", (e) => {
+        e.preventDefault(); // Stops accidental clicking on mobile
+        moveButton();
+    });
+
+    // Yes Button Click
+    yesBtn.addEventListener("click", () => {
+        mainContent.style.display = "none";
+        result.style.display = "block";
+        music.play();
+        startHearts();
+    });
+
+    // Floating Hearts Animation
+    function startHearts() {
+        setInterval(() => {
+            const heart = document.createElement("div");
+            heart.classList.add("heart");
+            heart.innerHTML = "💖";
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = (Math.random() * 2 + 3) + "s";
+            document.body.appendChild(heart);
+
+            setTimeout(() => heart.remove(), 5000);
+        }, 150);
+    }
+</script>
+
+</body>
+</html>
